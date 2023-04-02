@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Календарь</title>
+    <style>       
+        .year {
+            text-align: center;
+        }
+
+        .calendar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+
+        .month {            
+            border-collapse: collapse;  
+        }
+
+        .month td, .month th {
+            border: 1px solid black;
+            padding: 15px;
+            text-align: center;
+        }
+        
+        .month th {
+            background-color: burlywood;            
+        }        
+    </style>
+</head>
+<body>
+    <h1 class="year"></h1>
+    <div class="calendar">
+        <template class="month-template">  
+            <table id="table" class="month">
+                <caption></caption>   
+            </table>  
+        </template>
+    </div>
+    <script>
+        const monthFragment = document.querySelector('.month-template').content.querySelector('.month')  
+        const monthHeaders = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс']      
+
+        const createMonthTable = (year, month) => {
+            const monthElement = monthFragment.cloneNode(true)     
+            const lastDayOfMonthDate = new Date(year, month + 1, 0)
+            const emptyTdStyle = `style = "background-color: lightgray"`
+            const weekendStyle = `style = "background-color: indianred"`
+
+            let tableHtmlString = `<thead><tr>${ monthHeaders.map(header => `<th>${ header }</th>`).join('') }</thead>`      
+            let currentWeek = 0
+            const weeksArray = Array
+                .from({ length: lastDayOfMonthDate.getDate() }, (_, index) => index + 1)
+                .map((day) => {
+                    let dayOfWeek = (new Date(year, month, day)).getDay()
+                    if (dayOfWeek === 0) {
+                        dayOfWeek = 7
+                    }       
+                    return { dayNumber: day, dayOfWeek }
+                })
+                .reduce((weeks, day) => {                     
+                    if (!weeks[ currentWeek ]) {
+                        weeks[ currentWeek ] = Array(7).fill(0)
+                    }
+                    weeks[ currentWeek ][ day.dayOfWeek - 1] = day                    
+                    if (day.dayOfWeek % 7 === 0) {
+                        currentWeek++
+                    } 
+                    return weeks
+                }, [])        
+
+            tableHtmlString += weeksArray.reduce((html, week) => {           
+                html += '<tr>'
+                week.forEach(day => {
+                    html += `<td ${ !day ? emptyTdStyle: ([6, 7].includes(day.dayOfWeek)) ? weekendStyle : '' }>${ !day ? '' : day.dayNumber }</td>`
+                })
+                return html += '</tr>'                      
+            }, '')  
+
+            monthElement.querySelector('caption').insertAdjacentHTML("afterbegin", `<h3>${ lastDayOfMonthDate.toLocaleString('default', { month: 'long' }) }</h3`) 
+            monthElement.insertAdjacentHTML("afterbegin", tableHtmlString)    
+            return monthElement
+        }
+        const todayYear = (new Date()).getFullYear()
+        document.querySelector('.year').textContent = `${ todayYear } год`
+        Array.from({ length: 12 }, (_, index) => index).forEach(month => {            
+            document.querySelector('.calendar').appendChild(createMonthTable(todayYear, month))
+        })        
+    </script>
+</body>
+</html>
