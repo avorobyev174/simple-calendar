@@ -53,20 +53,17 @@
             let tableHtmlString = `<thead><tr>${ monthHeaders.map(header => `<th>${ header }</th>`).join('') }</thead>`      
             let currentWeek = 0
             const weeksArray = Array
-                .from({ length: lastDayOfMonthDate.getDate() }, (_, index) => index + 1)
-                .map((day) => {
-                    let dayOfWeek = (new Date(year, month, day)).getDay()
+                .from({ length: lastDayOfMonthDate.getDate() }, (_, index) => index + 1)              
+                .reduce((weeks, day) => { 
+                    let dayOfWeek = (new Date(year, month, day)).getDay()    
                     if (dayOfWeek === 0) {
                         dayOfWeek = 7
-                    }       
-                    return { dayNumber: day, dayOfWeek }
-                })
-                .reduce((weeks, day) => {                     
+                    }                  
                     if (!weeks[ currentWeek ]) {
                         weeks[ currentWeek ] = Array(7).fill(0)
                     }
-                    weeks[ currentWeek ][ day.dayOfWeek - 1] = day                    
-                    if (day.dayOfWeek % 7 === 0) {
+                    weeks[ currentWeek ][ dayOfWeek - 1] = { dayNumber: day, dayOfWeek }                    
+                    if (dayOfWeek % 7 === 0) {
                         currentWeek++
                     } 
                     return weeks
@@ -84,7 +81,7 @@
             monthElement.insertAdjacentHTML("afterbegin", tableHtmlString)    
             return monthElement
         }
-        const todayYear = (new Date()).getFullYear()
+        const todayYear = (new Date()).getFullYear() + 1
         document.querySelector('.year').textContent = `${ todayYear } год`
         Array.from({ length: 12 }, (_, index) => index).forEach(month => {            
             document.querySelector('.calendar').appendChild(createMonthTable(todayYear, month))
