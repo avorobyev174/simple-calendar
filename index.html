@@ -42,15 +42,14 @@
     </div>
     <script>
         const monthFragment = document.querySelector('.month-template').content.querySelector('.month')  
-        const monthHeaders = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс']      
-
+        const monthHeaders = ['пн', 'вт', 'ср', 'чт', 'пт', 'сб', 'вс'] 
         const createMonthTable = (year, month) => {
             const monthElement = monthFragment.cloneNode(true)     
             const lastDayOfMonthDate = new Date(year, month + 1, 0)
             const emptyTdStyle = `style = "background-color: lightgray"`
             const weekendStyle = `style = "background-color: indianred"`
-
-            let tableHtmlString = `<thead><tr>${ monthHeaders.map(header => `<th>${ header }</th>`).join('') }</thead>`      
+            
+            let tableHtmlString = `<thead><tr>${ monthHeaders.map((header) => `<th>${ header }</th>`).join('') }</thead>`      
             let currentWeek = 0
             const weeksArray = Array
                 .from({ length: lastDayOfMonthDate.getDate() }, (_, index) => index + 1)              
@@ -78,12 +77,12 @@
             }, '')  
 
             monthElement.querySelector('caption').insertAdjacentHTML("afterbegin", `<h3>${ lastDayOfMonthDate.toLocaleString('default', { month: 'long' }) }</h3`) 
-            monthElement.insertAdjacentHTML("afterbegin", tableHtmlString)    
+            monthElement.insertAdjacentHTML('afterbegin', tableHtmlString)    
             return monthElement
         }
         const todayYear = (new Date()).getFullYear() + 1
         document.querySelector('.year').textContent = `${ todayYear } год`
-        Array.from({ length: 12 }, (_, index) => index).forEach(month => {            
+        Array.from({ length: 12 }, (_, index) => index).forEach((month) => {            
             document.querySelector('.calendar').appendChild(createMonthTable(todayYear, month))
         })        
     </script>
